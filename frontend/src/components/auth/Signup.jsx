@@ -1,163 +1,169 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from '../shared/Navbar';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { USER_API_END_POINT } from '@/utils/constant';
-import { toast } from 'sonner';
-import { useDispatch, useSelector } from 'react-redux';
-import { setLoading } from '@/redux/authSlice';
-import { Loader2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react'
+import Navbar from '../shared/Navbar'
+import { Label } from '../ui/label'
+import { Input } from '../ui/input'
+import { Button } from '../ui/button'
+import { RadioGroup, } from '../ui/radio-group'
+import axios from 'axios'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
+import { useDispatch, useSelector } from 'react-redux'
+import { setLoading } from '@/redux/authSlice'
+import { Loader2 } from 'lucide-react'
 
-const Signup = () => {
+const Singup = () => {
   const [input, setInput] = useState({
     fullname: "",
     email: "",
     phoneNumber: "",
     password: "",
-    role: ""
+    role: "",
+    file: "",
   });
-
-  const { loading, user } = useSelector(store => store.auth);
+  const { loading, authUser } = useSelector(store => store.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
+  };
+  const changeFileHandler = (e) => {
+    setInput({ ...input, file: e.target.files?.[0] });
   }
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    const formData = new FormData();
+    formData.append("fullname", input.fullname);
+    formData.append("email", input.email);
+    formData.append("phoneNumber", input.phoneNumber);
+    formData.append("password", input.password);
+    formData.append("role", input.role);
+    if (input.file) {
+      formData.append("file", input.file);
+    } 
     try {
       dispatch(setLoading(true));
-      const res = await axios.post(`${USER_API_END_POINT}/register`, input, {
-        headers: { 'Content-Type': 'application/json' },
+      const res = await axios.post("https://techhunt-2.onrender.com/api/v1/user/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
         withCredentials: true
       });
-
       if (res.data.success) {
-        toast.success(res.data.message);
         navigate("/login");
+        toast.success(res.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Something went wrong!");
+      toast.error(error.response.data.message);
     } finally {
       dispatch(setLoading(false));
     }
   }
-
   useEffect(() => {
-    if (user) navigate("/");
-  }, [user]);
-
+    if (authUser?.role === 'recruiter') {
+      navigate("/admin/companies");
+    } else if (authUser?.role === 'student') {
+      navigate("/");
+    }
+  }, [])
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       <Navbar />
-      <div className="flex items-center justify-center py-20 px-4">
-        <form
-          onSubmit={submitHandler}
-          className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-6"
-        >
-          <h1 className="text-3xl font-bold text-center text-purple-700">Signup</h1>
-
-          <div className="space-y-1">
+      <div className='flex items-center justify-center max-w-7xl mx-auto'>
+        <form onSubmit={submitHandler} className='w-1/2 border border-gray-200 rounded-md p-4 my-10'>
+          <h1 className='font-bold text-xl mb-4'>Sign Up</h1>
+          <div className='my-2'>
             <Label>Full Name</Label>
             <Input
               type="text"
-              name="fullname"
               value={input.fullname}
+              name="fullname"
               onChange={changeEventHandler}
-              placeholder="Enter your full name"
-              className="focus:ring-purple-500 focus:border-purple-500"
+              placeholder="patel"
             />
           </div>
-
-          <div className="space-y-1">
+          <div className='my-2'>
             <Label>Email</Label>
             <Input
               type="email"
-              name="email"
               value={input.email}
+              name="email"
               onChange={changeEventHandler}
-              placeholder="Enter your email"
-              className="focus:ring-purple-500 focus:border-purple-500"
+              placeholder="patel@gmail.com"
             />
           </div>
-
-          <div className="space-y-1">
+          <div className='my-2'>
             <Label>Phone Number</Label>
             <Input
               type="text"
-              name="phoneNumber"
               value={input.phoneNumber}
+              name="phoneNumber"
               onChange={changeEventHandler}
-              placeholder="Enter your phone number"
-              className="focus:ring-purple-500 focus:border-purple-500"
+              placeholder="+918080808080"
             />
           </div>
-
-          <div className="space-y-1">
+          <div className='my-2'>
             <Label>Password</Label>
             <Input
               type="password"
-              name="password"
               value={input.password}
+              name="password"
               onChange={changeEventHandler}
-              placeholder="Enter your password"
-              className="focus:ring-purple-500 focus:border-purple-500"
+              placeholder="password"
             />
           </div>
-
-          <div>
-            <Label className="mb-2">Register as</Label>
-            <div className="flex gap-6">
-              <label className="flex items-center gap-2">
+          <div className='flex items-center justify-between'>
+            <RadioGroup className="flex items-center gap-4 my-5">
+              <div className="flex items-center space-x-2">
                 <Input
                   type="radio"
                   name="role"
                   value="student"
                   checked={input.role === 'student'}
                   onChange={changeEventHandler}
-                  className="cursor-pointer accent-purple-600"
+                  className="cursor-pointer"
                 />
-                <span>Student</span>
-              </label>
-              <label className="flex items-center gap-2">
+                <Label htmlFor="r1">Students</Label>
+              </div>
+              <div className="flex items-center space-x-2">
                 <Input
                   type="radio"
                   name="role"
-                  value="admin"
-                  checked={input.role === 'admin'}
+                  value="recruiter"
+                  checked={input.role === 'recruiter'}
                   onChange={changeEventHandler}
-                  className="cursor-pointer accent-purple-600"
+                  className="cursor-pointer"
                 />
-                <span>Admin</span>
-              </label>
+                <Label htmlFor="r2">Recruiter</Label>
+              </div>
+            </RadioGroup>
+            <div className='flex items-center gap-2'>
+              <Label>Profile</Label>
+              <Input
+                accept="image/*"
+                type="file"
+                onChange={changeFileHandler}
+                className="cursor-pointer"
+              />
             </div>
           </div>
-
-          <Button
-            type="submit"
-            className="w-full py-3 text-white bg-purple-600 hover:bg-purple-700 transition-colors flex justify-center items-center gap-2"
-            disabled={loading}
-          >
-            {loading && <Loader2 className="animate-spin h-5 w-5" />}
-            {loading ? "Please wait..." : "Signup"}
-          </Button>
-
-          <p className="text-center text-sm text-gray-500">
-            Already have an account?{" "}
-            <Link to="/login" className="text-purple-600 font-medium hover:underline">
-              Login
-            </Link>
-          </p>
+          {
+            loading ? (
+              <Button className='w-full my-4'>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                Please wait
+              </Button>
+            ) : (
+              <Button type='submit' className='w-full my-4'>Sign Up</Button>
+            )
+          }
+          <span className='text-sm'>Already have an account? <Link to={"/login"} className='text-blue-500 cursor-pointer underline'>Login</Link></span>
         </form>
       </div>
-    </div>
+    </>
   )
 }
 
-export default Signup;
+export default Singup
