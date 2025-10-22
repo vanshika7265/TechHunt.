@@ -1,57 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useDispatch } from 'react-redux';
-import { setSearchedQuery } from '@/redux/jobSlice';
+import { setSearchText } from '@/redux/jobSlice';
 
 const filterData = [
-  {
-    filterType: 'Location',
-    array: ['Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Mumbai']
-  },
-  {
-    filterType: 'Industry',
-    array: ['Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'Data Analyst']
-  },
+    {
+        filterType: "Location",
+        array: ["Delhi", "Bangalore", "Hyderabad", "Pune", "Chennai", "Mumbai"]
+    },
 ];
 
 const FilterCard = () => {
-  const [selectedValue, setSelectedValue] = useState('');
-  const dispatch = useDispatch();
+    const [selectedValue, setSelectedValue] = useState('');
+    const dispatch = useDispatch();
+    const handleChange = (value) => {
+        setSelectedValue(value);
+    };
+    useEffect(() => {
+        dispatch(setSearchText(selectedValue));
+    }, [selectedValue])
 
-  const changeHandler = (value) => setSelectedValue(value);
-
-  useEffect(() => {
-    dispatch(setSearchedQuery(selectedValue));
-  }, [selectedValue]);
-
-  return (
-    <div className="w-full bg-white p-5 rounded-xl shadow-md space-y-6">
-      <h1 className="font-bold text-xl">Filter Jobs</h1>
-      <RadioGroup value={selectedValue} onValueChange={changeHandler} className="space-y-4">
-        {filterData.map(({ filterType, array }) => (
-          <div key={filterType} className="space-y-2">
-            <h2 className="font-semibold text-lg">{filterType}</h2>
-            <div className="flex flex-col space-y-2">
-              {array.map(item => {
-                const itemId = `${filterType}-${item}`;
-                return (
-                  <div key={itemId} className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value={item}
-                      id={itemId}
-                      className="h-5 w-5 border-gray-300 focus:ring-2 focus:ring-[#7209b7]"
-                    />
-                    <Label htmlFor={itemId} className="cursor-pointer">{item}</Label>
-                  </div>
-                );
-              })}
+    return (
+        <div className='w-full bg-white p-3 rounded-md'>
+            <div className='flex items-center justify-between'>
+                <h1 className='font-bold text-lg'>Filter Jobs</h1>
             </div>
-          </div>
-        ))}
-      </RadioGroup>
-    </div>
-  );
+            <hr className='mt-3' />
+            <RadioGroup value={selectedValue} onValueChange={handleChange}>
+                {filterData.map((data, index) => (
+                    <div key={index}>
+                        <h1 className='font-medium text-lg'>{data.filterType}</h1>
+                        {data.array.map((item, idx) => {
+                            const itemId = `r${index}-${idx}`; // Ensure unique id for each radio button
+                            return (
+                                <div key={idx} className="flex items-center space-x-2 my-2">
+                                    <RadioGroupItem value={item} id={itemId} />
+                                    <Label htmlFor={itemId}>{item}</Label>
+                                </div>
+                            );
+                        })}
+                    </div>
+                ))}
+            </RadioGroup>
+        </div>
+    );
 };
 
 export default FilterCard;
