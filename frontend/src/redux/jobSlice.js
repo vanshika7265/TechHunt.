@@ -32,6 +32,7 @@ const jobSlice = createSlice({
         }
     }
 });
+
 export const {
     setAllJobs, 
     setSingleJob, 
@@ -40,4 +41,5 @@ export const {
     setAllAppliedJobs,
     setSearchedQuery
 } = jobSlice.actions;
+
 export default jobSlice.reducer;
