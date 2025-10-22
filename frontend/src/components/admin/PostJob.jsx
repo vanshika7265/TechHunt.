@@ -31,18 +31,36 @@ const PostJob = () => {
   };
 
   const selectChangeHandler = (value) => {
-    const selectedCompany = companies.find(company => company.name.toLowerCase() === value);
-    setInput({ ...input, companyId: selectedCompany._id });
+    const selectedCompany = companies.find(c => c.name.toLowerCase() === value);
+    setInput({ ...input, companyId: selectedCompany?._id || "" });
   };
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    // ✅ Company must be selected
+    if (!input.companyId) {
+      toast.error("Please select a company before posting the job");
+      return;
+    }
+
+    // ✅ Prepare payload: remove empty strings
+    const payload = { ...input };
+    Object.keys(payload).forEach(key => {
+      if (payload[key] === "" || payload[key] === null) delete payload[key];
+    });
+
     try {
       setLoading(true);
-      const res = await axios.post(`https://techhunt-2.onrender.com/api/v1/job/post`, input, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
-      });
+      const res = await axios.post(
+        `https://techhunt-2.onrender.com/api/v1/job/post`,
+        payload,
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true
+        }
+      );
+
       if (res.data.success) {
         toast.success(res.data.message);
         navigate("/admin/jobs");
@@ -70,82 +88,42 @@ const PostJob = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Job Title</Label>
-              <Input
-                name="title"
-                value={input.title}
-                onChange={changeEventHandler}
-                placeholder="Software Developer, Data Analyst etc."
-              />
+              <Input name="title" value={input.title} onChange={changeEventHandler} placeholder="Software Developer, Data Analyst etc." />
             </div>
 
             <div>
               <Label>Description</Label>
-              <Input
-                name="description"
-                value={input.description}
-                onChange={changeEventHandler}
-                placeholder="Brief about the job"
-              />
+              <Input name="description" value={input.description} onChange={changeEventHandler} placeholder="Brief about the job" />
             </div>
 
             <div>
               <Label>Requirements</Label>
-              <Input
-                name="requirements"
-                value={input.requirements}
-                onChange={changeEventHandler}
-                placeholder="Skills, qualifications etc."
-              />
+              <Input name="requirements" value={input.requirements} onChange={changeEventHandler} placeholder="Skills, qualifications etc." />
             </div>
 
             <div>
               <Label>Salary</Label>
-              <Input
-                name="salary"
-                value={input.salary}
-                onChange={changeEventHandler}
-                placeholder="₹3,00,000 - ₹6,00,000 per annum"
-              />
+              <Input name="salary" value={input.salary} onChange={changeEventHandler} placeholder="₹3,00,000 - ₹6,00,000 per annum" />
             </div>
 
             <div>
               <Label>Location</Label>
-              <Input
-                name="location"
-                value={input.location}
-                onChange={changeEventHandler}
-                placeholder="City, State"
-              />
+              <Input name="location" value={input.location} onChange={changeEventHandler} placeholder="City, State" />
             </div>
 
             <div>
               <Label>Job Type</Label>
-              <Input
-                name="jobType"
-                value={input.jobType}
-                onChange={changeEventHandler}
-                placeholder="Full-time, Internship etc."
-              />
+              <Input name="jobType" value={input.jobType} onChange={changeEventHandler} placeholder="Full-time, Internship etc." />
             </div>
 
             <div>
               <Label>Experience Level</Label>
-              <Input
-                name="experience"
-                value={input.experience}
-                onChange={changeEventHandler}
-                placeholder="Fresher, 1-2 years etc."
-              />
+              <Input name="experience" value={input.experience} onChange={changeEventHandler} placeholder="Fresher, 1-2 years etc." />
             </div>
 
             <div>
               <Label>No. of Positions</Label>
-              <Input
-                type="number"
-                name="position"
-                value={input.position}
-                onChange={changeEventHandler}
-              />
+              <Input type="number" name="position" value={input.position} onChange={changeEventHandler} />
             </div>
 
             <div>

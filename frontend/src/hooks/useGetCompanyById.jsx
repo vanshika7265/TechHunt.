@@ -3,17 +3,16 @@ import { useDispatch } from 'react-redux';
 import { setSingleCompany } from '@/redux/companySlice';
 import axios from 'axios';
 
-
 const useGetCompanyById = (companyId) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!companyId) return;
+    if (!companyId) return; // ✅ safety check
 
     const fetchSingleCompany = async () => {
       try {
-          axios.defaults.withCredentials = true;
-                const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/company/getcompany/${id}`);
+        axios.defaults.withCredentials = true;
+        const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/company/getcompany/${companyId}`); // ✅ use companyId
 
         if (res.data.success) {
           dispatch(setSingleCompany(res.data.company));
