@@ -2,37 +2,39 @@ import React, { useEffect, useState } from 'react';
 import { Label } from './ui/label';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useDispatch } from 'react-redux';
-import { setSearchedQuery } from '@/redux/jobSlice'; // ✅ Corrected
+import { setSearchedQuery, setCompanyFilter, setJobTypeFilter } from '@/redux/jobSlice';
 
 const filterData = [
-    {
-        filterType: "Location",
-        array: ["Delhi", "Bangalore", "Hyderabad", "Pune", "Chennai", "Mumbai"]
-    },
+    { filterType: "Location", array: ["Delhi", "Bangalore", "Hyderabad", "Pune", "Chennai", "Mumbai"] },
+    { filterType: "Job Type", array: ["Full-time", "Part-time", "Internship"] },
 ];
 
 const FilterCard = () => {
-    const [selectedValue, setSelectedValue] = useState('');
     const dispatch = useDispatch();
+    const [filters, setFilters] = useState({ location: "", company: "", jobType: "" });
 
-    const handleChange = (value) => {
-        setSelectedValue(value);
+    const handleChange = (filterType, value) => {
+        const updated = { ...filters, [filterType.toLowerCase().replace(" ", "")]: value };
+        setFilters(updated);
     };
 
     useEffect(() => {
-        dispatch(setSearchedQuery(selectedValue)); // ✅ Updated action
-    }, [selectedValue]);
+        dispatch(setSearchedQuery(filters.location));
+        dispatch(setCompanyFilter(filters.company));
+        dispatch(setJobTypeFilter(filters.jobType));
+    }, [filters]);
 
     return (
         <div className='w-full bg-white p-3 rounded-md'>
-            <div className='flex items-center justify-between'>
-                <h1 className='font-bold text-lg'>Filter Jobs</h1>
-            </div>
+            <h1 className='font-bold text-lg'>Filter Jobs</h1>
             <hr className='mt-3' />
-            <RadioGroup value={selectedValue} onValueChange={handleChange}>
-                {filterData.map((data, index) => (
-                    <div key={index}>
-                        <h1 className='font-medium text-lg'>{data.filterType}</h1>
+            {filterData.map((data, index) => (
+                <div key={index} className="mt-3">
+                    <h1 className='font-medium text-lg'>{data.filterType}</h1>
+                    <RadioGroup
+                        value={filters[data.filterType.toLowerCase().replace(" ", "")]}
+                        onValueChange={(val) => handleChange(data.filterType, val)}
+                    >
                         {data.array.map((item, idx) => {
                             const itemId = `r${index}-${idx}`;
                             return (
@@ -42,9 +44,9 @@ const FilterCard = () => {
                                 </div>
                             );
                         })}
-                    </div>
-                ))}
-            </RadioGroup>
+                    </RadioGroup>
+                </div>
+            ))}
         </div>
     );
 };
