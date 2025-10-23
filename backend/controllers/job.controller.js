@@ -1,43 +1,37 @@
 import { Job } from "../models/job.model.js";
 
+// POST: Admin creates a new job
 export const postJob = async (req, res) => {
   try {
     const { title, description, requirements, salary, location, jobType, experience, position, companyId } = req.body;
     const userId = req.id;
 
-    if (!userId) return res.status(401).json({ message: "Unauthorized", success: false });
-
-    if (!title || !description || !requirements || salary === undefined || !location || !jobType || experience === undefined || !position || !companyId) {
-      return res.status(400).json({ message: "Missing required fields", success: false });
+    // Validate required fields
+    if (!title || !description || !companyId) {
+      return res.status(400).json({ message: "Title, Description, and Company are required", success: false });
     }
-
-    const salaryNumber = Number(salary);
-    const experienceNumber = Number(experience);
-    if (isNaN(salaryNumber) || isNaN(experienceNumber)) {
-      return res.status(400).json({ message: "Salary or Experience must be numbers", success: false });
-    }
-
-    const requirementsArray = typeof requirements === "string" ? requirements.split(",").map(r => r.trim()) : Array.isArray(requirements) ? requirements : [];
 
     const job = await Job.create({
       title,
       description,
-      requirements: requirementsArray,
-      salary: salaryNumber,
-      location,
-      jobType,
-      experienceLevel: experienceNumber,
-      position,
+      requirements: requirements?.map(r => r.trim()) || [],
+      salary: Number(salary) || 0,
+      location: location || "",
+      jobType: jobType || "",
+      experienceLevel: Number(experience) || 0,
+      position: position || "", // ✅ string
       company: companyId,
       created_by: userId
     });
 
     return res.status(201).json({ message: "Job created successfully", job, success: true });
+
   } catch (error) {
-    console.error("Job posting error:", error);
-    return res.status(500).json({ message: "Internal Server Error", success: false, error: error.message });
+    console.error(error);
+    return res.status(500).json({ message: "Internal Server Error", success: false, error });
   }
 };
+
 
 
 // STUDENT: Get all jobs with optional search keyword

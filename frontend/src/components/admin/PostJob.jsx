@@ -72,18 +72,19 @@ const PostJob = () => {
 
       // ✅ Prepare payload
       const payload = {
-        title: input.title.trim(),
-        description: input.description.trim(),
-        requirements: input.requirements
-          ? input.requirements.split(",").map((r) => r.trim())
-          : [],
-        salary: input.salary ? Number(input.salary) : 0,
-        location: input.location.trim() || "",
-        jobType: input.jobType.trim() || "",
-        experience: input.experience ? Number(input.experience) : 0,
-        position: input.position.trim() || "", // string
-        companyId: input.companyId,
-      };
+  title: input.title.trim(),
+  description: input.description.trim(),
+  requirements: input.requirements
+    ? input.requirements.split(",").map((r) => r.trim())
+    : [],
+  salary: input.salary ? Number(input.salary) : 0,
+  location: input.location.trim() || "",
+  jobType: input.jobType.trim() || "",
+  experience: input.experience ? Number(input.experience) : 0,
+  position: input.position.trim() || "", // ✅ string
+  companyId: input.companyId,
+};
+
 
       const res = await axios.post(
         "https://techhunt-2.onrender.com/api/v1/job/post",
