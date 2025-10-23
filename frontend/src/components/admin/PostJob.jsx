@@ -1,10 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Navbar from "../shared/Navbar";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useSelector } from "react-redux";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import axios from "axios";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -20,22 +27,21 @@ const PostJob = () => {
     location: "",
     jobType: "",
     experience: "",
-    position: 0,
+    position: "",
     companyId: "",
   });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { companies } = useSelector((store) => store.company);
 
-  useGetAllCompanies(); // ✅ fetch companies on mount
+  useGetAllCompanies();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
   const selectChangeHandler = (value) => {
-    const selectedCompany = companies.find((c) => c._id === value);
-    if (selectedCompany) setInput({ ...input, companyId: selectedCompany._id });
+    setInput({ ...input, companyId: value });
   };
 
   const submitHandler = async (e) => {
@@ -48,20 +54,38 @@ const PostJob = () => {
 
     try {
       setLoading(true);
+
+      // ✅ Prepare safe payload for backend
+      const payload = {
+        title: input.title.trim(),
+        description: input.description.trim(),
+        requirements: input.requirements
+          ? input.requirements.split(",").map((r) => r.trim())
+          : [],
+        salary: input.salary ? Number(input.salary) : 0,
+        location: input.location.trim() || "",
+        jobType: input.jobType.trim() || "",
+        experience: input.experience ? Number(input.experience) : 0,
+        position: input.position ? Number(input.position) : 0,
+        companyId: input.companyId,
+      };
+
       const res = await axios.post(
         "https://techhunt-2.onrender.com/api/v1/job/post",
-        input,
+        payload,
         {
           headers: { "Content-Type": "application/json" },
           withCredentials: true,
         }
       );
+
       if (res.data.success) {
         toast.success(res.data.message);
         navigate("/admin/jobs");
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong");
+      console.error("Job post error:", error.response?.data || error);
     } finally {
       setLoading(false);
     }
@@ -98,6 +122,69 @@ const PostJob = () => {
             </div>
 
             <div>
+              <Label>Requirements (comma separated)</Label>
+              <Input
+                name="requirements"
+                value={input.requirements}
+                onChange={changeEventHandler}
+                placeholder="React, Node.js, SQL"
+              />
+            </div>
+
+            <div>
+              <Label>Salary</Label>
+              <Input
+                type="number"
+                name="salary"
+                value={input.salary}
+                onChange={changeEventHandler}
+                placeholder="50000"
+              />
+            </div>
+
+            <div>
+              <Label>Location</Label>
+              <Input
+                name="location"
+                value={input.location}
+                onChange={changeEventHandler}
+                placeholder="New York"
+              />
+            </div>
+
+            <div>
+              <Label>Job Type</Label>
+              <Input
+                name="jobType"
+                value={input.jobType}
+                onChange={changeEventHandler}
+                placeholder="Full-time"
+              />
+            </div>
+
+            <div>
+              <Label>Experience (years)</Label>
+              <Input
+                type="number"
+                name="experience"
+                value={input.experience}
+                onChange={changeEventHandler}
+                placeholder="2"
+              />
+            </div>
+
+            <div>
+              <Label>Position</Label>
+              <Input
+                type="number"
+                name="position"
+                value={input.position}
+                onChange={changeEventHandler}
+                placeholder="1"
+              />
+            </div>
+
+            <div className="md:col-span-2">
               <Label>Select Company</Label>
               <Select value={input.companyId} onValueChange={selectChangeHandler}>
                 <SelectTrigger className="w-full">

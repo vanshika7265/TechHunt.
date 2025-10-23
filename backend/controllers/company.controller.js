@@ -80,41 +80,28 @@ export const getCompanyById = async (req, res) => {
 };
 
 // Update company (without file upload for now)
-// Update company (without file upload for now)
 export const updateCompany = async (req, res) => {
-  try {
-    const { name, description, website, location } = req.body;
+    try {
+        const { name, description, website, location } = req.body;
 
-    // ✅ Only include fields that are provided (non-undefined)
-    const updateData = {};
-    if (name !== undefined) updateData.name = name;
-    if (description !== undefined) updateData.description = description;
-    if (website !== undefined) updateData.website = website;
-    if (location !== undefined) updateData.location = location;
+        // Only update the fields provided
+        const updateData = { name, description, website, location };
 
-    // ✅ Run validators to ensure schema constraints
-    const company = await Company.findByIdAndUpdate(req.params.id, updateData, {
-      new: true,
-      runValidators: true,
-    });
+        const company = await Company.findByIdAndUpdate(req.params.id, updateData, { new: true });
 
-    if (!company) {
-      return res.status(404).json({
-        message: "Company not found.",
-        success: false,
-      });
+        if (!company) {
+            return res.status(404).json({
+                message: "Company not found.",
+                success: false
+            });
+        }
+
+        return res.status(200).json({
+            message: "Company information updated.",
+            success: true
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Server error", success: false });
     }
-
-    return res.status(200).json({
-      message: "Company information updated successfully.",
-      success: true,
-      company, // return updated company to frontend
-    });
-  } catch (error) {
-    console.error("Update Company Error:", error);
-    return res.status(500).json({
-      message: error.message || "Server error",
-      success: false,
-    });
-  }
 };
