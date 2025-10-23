@@ -9,13 +9,14 @@ const useGetAllCompanies = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
+        // ✅ Direct endpoint here
         const res = await axios.get(
           "https://techhunt-2.onrender.com/api/v1/company/getcompany",
           { withCredentials: true }
         );
-        if (res.data.success) {
-          dispatch(setCompanies(res.data.companies));
-        }
+
+        // ✅ Dispatch to Redux store
+        dispatch(setCompanies(res.data.companies || res.data.data || []));
       } catch (error) {
         console.error("Error fetching companies:", error);
       }
