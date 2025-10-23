@@ -1,25 +1,26 @@
-import { setAllJobs } from '@/redux/jobSlice'
-import axios from 'axios'
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { setAllJobs } from "@/redux/jobSlice";
+import axios from "axios"
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
 
 const useGetAllJobs = () => {
     const dispatch = useDispatch();
-    const {searchedQuery} = useSelector(store=>store.job);
-    useEffect(()=>{
-        const fetchAllJobs = async () => {
+    const { searchText } = useSelector(store => store.job);
+
+    useEffect(() => {
+        const fetchJobs = async () => {
             try {
                 axios.defaults.withCredentials = true;
-                const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/job/all?keyword=${searchText}`);
-                if(res.data.success){
+                const res = await axios.get(`hhttps://techhunt-2.onrender.com/api/v1/job/all?keyword=${searchText}`);
+               
+                if (res.data.success) {
                     dispatch(setAllJobs(res.data.jobs));
                 }
             } catch (error) {
                 console.log(error);
             }
         }
-        fetchAllJobs();
-    },[])
+        fetchJobs();
+    }, [])
 }
-
-export default useGetAllJobs
+export default useGetAllJobs;
