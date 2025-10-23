@@ -17,21 +17,18 @@ const CompaniesTable = () => {
   const [filteredCompanies, setFilteredCompanies] = useState([]);
   const navigate = useNavigate();
 
-  // ✅ Filter companies based on search text
+  // Filter companies based on search text
   useEffect(() => {
     if (!Array.isArray(companies)) {
       setFilteredCompanies([]);
       return;
     }
-
     const filtered = companies.filter((company) =>
       company?.name?.toLowerCase().includes(searchCompanyByText || "")
     );
-
     setFilteredCompanies(filtered);
   }, [companies, searchCompanyByText]);
 
-  // ✅ Badge color helper
   const getBadgeColor = (status) => {
     switch (status?.toLowerCase()) {
       case "active":

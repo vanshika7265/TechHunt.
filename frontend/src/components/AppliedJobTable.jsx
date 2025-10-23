@@ -1,18 +1,55 @@
-import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { Badge } from './ui/badge';
-import { useSelector } from 'react-redux';
+import React from "react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
+import { useSelector } from "react-redux";
+
+// ✅ Demo applied jobs data
+const demoAppliedJobs = [
+  {
+    _id: "1",
+    createdAt: "2025-10-23T12:00:00Z",
+    status: "accepted",
+    job: {
+      title: "Frontend Developer",
+      company: { name: "Google" },
+    },
+  },
+  {
+    _id: "2",
+    createdAt: "2025-10-20T09:30:00Z",
+    status: "pending",
+    job: {
+      title: "Backend Engineer",
+      company: { name: "Amazon" },
+    },
+  },
+  {
+    _id: "3",
+    createdAt: "2025-10-18T15:45:00Z",
+    status: "rejected",
+    job: {
+      title: "Data Analyst",
+      company: { name: "Forma.AI" },
+    },
+  },
+];
 
 const AppliedJobTable = () => {
-  const { allAppliedJobs } = useSelector(store => store.job);
+  const { allAppliedJobs = [] } = useSelector((store) => store.job);
+
+  // Decide which data to render: real applied jobs or demo data
+  const jobsToRender = allAppliedJobs.length > 0 ? allAppliedJobs : demoAppliedJobs;
 
   // Function to get badge variant based on status
   const getBadgeVariant = (status) => {
     switch (status) {
-      case 'accepted': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'rejected': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case "accepted":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "rejected":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -28,14 +65,14 @@ const AppliedJobTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {allAppliedJobs.length === 0 ? (
+          {jobsToRender.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4} className="text-center py-8 text-gray-500 font-medium">
                 You haven't applied to any job yet.
               </TableCell>
             </TableRow>
           ) : (
-            allAppliedJobs.map((appliedJob) => (
+            jobsToRender.map((appliedJob) => (
               <TableRow
                 key={appliedJob._id}
                 className="hover:bg-gray-50 transition-colors cursor-pointer rounded-lg"
@@ -47,7 +84,9 @@ const AppliedJobTable = () => {
                 <TableCell className="px-6 py-4">{appliedJob.job?.company?.name}</TableCell>
                 <TableCell className="text-right px-6 py-4">
                   <span
-                    className={`inline-block px-4 py-1 rounded-full font-semibold text-sm ${getBadgeVariant(appliedJob.status)}`}
+                    className={`inline-block px-4 py-1 rounded-full font-semibold text-sm ${getBadgeVariant(
+                      appliedJob.status
+                    )}`}
                   >
                     {appliedJob.status.charAt(0).toUpperCase() + appliedJob.status.slice(1)}
                   </span>

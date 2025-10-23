@@ -9,19 +9,15 @@ const useGetAllCompanies = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        // 🔗 Correct full backend API URL (Render deployed)
         const res = await axios.get(
-          "https://techhunt-2.onrender.com/api/v1/company/getcompany",
+          "https://techhunt-2.onrender.com/api/v1/company/get", // ✅ Correct endpoint
           {
-            withCredentials: true, // if backend uses cookies/session
-            headers: {
-              "Content-Type": "application/json",
-            },
+            withCredentials: true,
+            headers: { "Content-Type": "application/json" },
           }
         );
 
-        // ✅ Dispatch to Redux store
-        // Adjust for backend response key
+        console.log("COMPANIES RESPONSE:", res.data); // Debug log
         dispatch(setCompanies(res.data.companies || res.data.data || []));
       } catch (error) {
         console.error("Error fetching companies:", error);
