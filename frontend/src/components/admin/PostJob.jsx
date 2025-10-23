@@ -44,18 +44,33 @@ const PostJob = () => {
     setInput({ ...input, companyId: value });
   };
 
+  const resetForm = () => {
+    setInput({
+      title: "",
+      description: "",
+      requirements: "",
+      salary: "",
+      location: "",
+      jobType: "",
+      experience: "",
+      position: "",
+      companyId: "",
+    });
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
 
-    if (!input.title || !input.description || !input.companyId) {
-      toast.error("Please fill Title, Description and select a Company");
+    // ✅ Basic validation
+    if (!input.title.trim() || !input.description.trim() || !input.companyId) {
+      toast.error("Please fill Title, Description, and select a Company");
       return;
     }
 
     try {
       setLoading(true);
 
-      // ✅ Prepare safe payload for backend
+      // ✅ Prepare payload
       const payload = {
         title: input.title.trim(),
         description: input.description.trim(),
@@ -66,7 +81,7 @@ const PostJob = () => {
         location: input.location.trim() || "",
         jobType: input.jobType.trim() || "",
         experience: input.experience ? Number(input.experience) : 0,
-        position: input.position ? Number(input.position) : 0,
+        position: input.position.trim() || "", // string
         companyId: input.companyId,
       };
 
@@ -75,17 +90,18 @@ const PostJob = () => {
         payload,
         {
           headers: { "Content-Type": "application/json" },
-          withCredentials: true,
+          withCredentials: true, // ✅ send JWT cookie
         }
       );
 
       if (res.data.success) {
         toast.success(res.data.message);
-        navigate("/admin/jobs");
+        resetForm(); // ✅ reset form after success
+        navigate("/admin/jobs"); // redirect after posting
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
       console.error("Job post error:", error.response?.data || error);
+      toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -108,6 +124,7 @@ const PostJob = () => {
                 value={input.title}
                 onChange={changeEventHandler}
                 placeholder="Software Developer"
+                required
               />
             </div>
 
@@ -118,6 +135,7 @@ const PostJob = () => {
                 value={input.description}
                 onChange={changeEventHandler}
                 placeholder="Job description"
+                required
               />
             </div>
 
@@ -139,6 +157,7 @@ const PostJob = () => {
                 value={input.salary}
                 onChange={changeEventHandler}
                 placeholder="50000"
+                min={0}
               />
             </div>
 
@@ -170,33 +189,39 @@ const PostJob = () => {
                 value={input.experience}
                 onChange={changeEventHandler}
                 placeholder="2"
+                min={0}
               />
             </div>
 
             <div>
               <Label>Position</Label>
               <Input
-                type="number"
                 name="position"
                 value={input.position}
                 onChange={changeEventHandler}
-                placeholder="1"
+                placeholder="Junior"
               />
             </div>
 
             <div className="md:col-span-2">
               <Label>Select Company</Label>
-              <Select value={input.companyId} onValueChange={selectChangeHandler}>
+              <Select value={input.companyId} onValueChange={selectChangeHandler} required>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a Company" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {companies.map((c) => (
-                      <SelectItem key={c._id} value={c._id}>
-                        {c.name}
+                    {companies.length > 0 ? (
+                      companies.map((c) => (
+                        <SelectItem key={c._id} value={c._id}>
+                          {c.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem disabled value="">
+                        No companies available
                       </SelectItem>
-                    ))}
+                    )}
                   </SelectGroup>
                 </SelectContent>
               </Select>

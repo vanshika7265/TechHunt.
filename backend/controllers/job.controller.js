@@ -1,54 +1,44 @@
 import { Job } from "../models/job.model.js";
 
-// ADMIN: Post a new job
 export const postJob = async (req, res) => {
-    try {
-        const { title, description, requirements, salary, location, jobType, experience, position, companyId } = req.body;
-        const userId = req.id;
+  try {
+    const { title, description, requirements, salary, location, jobType, experience, position, companyId } = req.body;
+    const userId = req.id;
 
-        // Validate required fields
-        if (!title || !description || !requirements || salary === undefined || !location || !jobType || experience === undefined || !position || !companyId) {
-            return res.status(400).json({
-                message: "Something is missing.",
-                success: false
-            });
-        }
+    if (!userId) return res.status(401).json({ message: "Unauthorized", success: false });
 
-        // Ensure salary is a valid number
-        const salaryNumber = Number(salary);
-        if (isNaN(salaryNumber)) {
-            return res.status(400).json({
-                message: "Salary must be a number.",
-                success: false
-            });
-        }
-
-        const job = await Job.create({
-            title,
-            description,
-            requirements: requirements.split(",").map(r => r.trim()), // convert to array
-            salary: salaryNumber,
-            location,
-            jobType,
-            experienceLevel: Number(experience) || 0, // 0 allowed
-            position,
-            company: companyId,
-            created_by: userId
-        });
-
-        return res.status(201).json({
-            message: "New job created successfully.",
-            job,
-            success: true
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({
-            message: "Internal Server Error",
-            success: false
-        });
+    if (!title || !description || !requirements || salary === undefined || !location || !jobType || experience === undefined || !position || !companyId) {
+      return res.status(400).json({ message: "Missing required fields", success: false });
     }
+
+    const salaryNumber = Number(salary);
+    const experienceNumber = Number(experience);
+    if (isNaN(salaryNumber) || isNaN(experienceNumber)) {
+      return res.status(400).json({ message: "Salary or Experience must be numbers", success: false });
+    }
+
+    const requirementsArray = typeof requirements === "string" ? requirements.split(",").map(r => r.trim()) : Array.isArray(requirements) ? requirements : [];
+
+    const job = await Job.create({
+      title,
+      description,
+      requirements: requirementsArray,
+      salary: salaryNumber,
+      location,
+      jobType,
+      experienceLevel: experienceNumber,
+      position,
+      company: companyId,
+      created_by: userId
+    });
+
+    return res.status(201).json({ message: "Job created successfully", job, success: true });
+  } catch (error) {
+    console.error("Job posting error:", error);
+    return res.status(500).json({ message: "Internal Server Error", success: false, error: error.message });
+  }
 };
+
 
 // STUDENT: Get all jobs with optional search keyword
 export const getAllJobs = async (req, res) => {
