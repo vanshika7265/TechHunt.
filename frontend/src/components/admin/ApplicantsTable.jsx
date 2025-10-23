@@ -23,6 +23,8 @@ const ApplicantsTable = () => {
         }
     }
 
+    const applications = applicants?.applications || []; // ✅ default empty array
+
     return (
         <div className="max-w-6xl mx-auto my-6 p-4 bg-white rounded-2xl shadow-lg overflow-x-auto">
             <Table className="min-w-full">
@@ -36,19 +38,19 @@ const ApplicantsTable = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {applicants?.applications?.length === 0 ? (
+                    {applications.length === 0 ? (
                         <TableRow>
                             <TableCell colSpan={5} className="text-center py-6 text-gray-500 font-medium">
                                 No applicants yet.
                             </TableCell>
                         </TableRow>
                     ) : (
-                        applicants.applications.map((item) => (
-                            <TableRow key={item._id} className="hover:bg-gray-50 transition-colors rounded-lg">
-                                <TableCell>{item?.applicant?.fullname}</TableCell>
-                                <TableCell>{item?.applicant?.email}</TableCell>
-                                <TableCell>{item?.applicant?.phoneNumber}</TableCell>
-                                <TableCell>{item?.applicant?.createdAt?.split("T")[0]}</TableCell>
+                        applications.map((item) => (
+                            <TableRow key={item?._id} className="hover:bg-gray-50 transition-colors rounded-lg">
+                                <TableCell>{item?.applicant?.fullname || "-"}</TableCell>
+                                <TableCell>{item?.applicant?.email || "-"}</TableCell>
+                                <TableCell>{item?.applicant?.phoneNumber || "-"}</TableCell>
+                                <TableCell>{item?.applicant?.createdAt?.split("T")[0] || "-"}</TableCell>
                                 <TableCell className="text-right">
                                     <Popover>
                                         <PopoverTrigger>
@@ -58,8 +60,8 @@ const ApplicantsTable = () => {
                                             {shortlistingStatus.map((status, index) => (
                                                 <div
                                                     key={index}
-                                                    onClick={() => statusHandler(status, item._id)}
-                                                    className={`flex w-full items-center px-2 py-1 my-1 rounded-md cursor-pointer hover:bg-gray-100`}
+                                                    onClick={() => statusHandler(status, item?._id)}
+                                                    className="flex w-full items-center px-2 py-1 my-1 rounded-md cursor-pointer hover:bg-gray-100"
                                                 >
                                                     <span className={`font-medium ${status === "Accepted" ? "text-green-600" : "text-red-600"}`}>
                                                         {status}
