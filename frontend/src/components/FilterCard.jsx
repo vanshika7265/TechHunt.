@@ -4,6 +4,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useDispatch } from 'react-redux';
 import { setSearchedQuery, setCompanyFilter, setJobTypeFilter } from '@/redux/jobSlice';
 
+
 const filterData = [
     { filterType: "Location", array: ["Delhi", "Bangalore", "Hyderabad", "Pune", "Chennai", "Mumbai"] },
     { filterType: "Job Type", array: ["Full-time", "Part-time", "Internship"] },
