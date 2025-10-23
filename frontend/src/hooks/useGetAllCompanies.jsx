@@ -10,10 +10,12 @@ const useGetAllCompanies = () => {
     const fetchCompanies = async () => {
       try {
         // ✅ Direct endpoint here
-        const res = await axios.get(
-          "https://techhunt-2.onrender.com/api/v1/company/getcompany",
-          { withCredentials: true }
-        );
+       const res = await axios.get(
+  "https://techhunt-2.onrender.com/api/v1/company/getcompany",
+  { withCredentials: true }
+);
+console.log("COMPANIES RESPONSE:", res.data);  // ← add this line
+
 
         // ✅ Dispatch to Redux store
         dispatch(setCompanies(res.data.companies || res.data.data || []));
