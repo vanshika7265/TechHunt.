@@ -1,3 +1,5 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 const jobSlice = createSlice({
     name:"job",
     initialState:{
@@ -7,8 +9,8 @@ const jobSlice = createSlice({
         searchJobByText:"",
         allAppliedJobs:[],
         searchedQuery:"",
-        companyFilter:"",   // new
-        jobTypeFilter:""    // new
+        companyFilter:"",
+        jobTypeFilter:""
     },
     reducers:{
         setAllJobs:(state,action) => { state.allJobs = action.payload; },
@@ -17,8 +19,8 @@ const jobSlice = createSlice({
         setSearchJobByText:(state,action) => { state.searchJobByText = action.payload; },
         setAllAppliedJobs:(state,action) => { state.allAppliedJobs = action.payload; },
         setSearchedQuery:(state,action) => { state.searchedQuery = action.payload; },
-        setCompanyFilter:(state, action) => { state.companyFilter = action.payload; },   // ✅ define
-        setJobTypeFilter:(state, action) => { state.jobTypeFilter = action.payload; }    // ✅ define
+        setCompanyFilter:(state, action) => { state.companyFilter = action.payload; },
+        setJobTypeFilter:(state, action) => { state.jobTypeFilter = action.payload; }
     }
 });
 
