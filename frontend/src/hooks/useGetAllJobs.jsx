@@ -12,8 +12,11 @@ const useGetAllJobs = () => {
                 const res = await axios.get("https://techhunt-2.onrender.com/api/job/get", {
                     withCredentials: true
                 });
-                // Only Active jobs
-                const activeJobs = res.data.jobs.filter(job => job.status === "Active");
+
+                // ✅ Safe check for undefined
+                const jobsData = res?.data?.jobs || [];
+                const activeJobs = jobsData.filter(job => job.status === "Active");
+
                 dispatch(setAllJobs(activeJobs));
             } catch (err) {
                 console.error("Error fetching jobs:", err);

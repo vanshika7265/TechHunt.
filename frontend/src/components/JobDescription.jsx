@@ -15,7 +15,11 @@ const JobDescription = () => {
   const jobId = params.id;
   const dispatch = useDispatch();
 
-  const isIntiallyApplied = singleJob?.applications?.some(app => app.applicant === user?._id) || false;
+  // ✅ Safe check for applications array
+  const isIntiallyApplied = singleJob && Array.isArray(singleJob.applications)
+    ? singleJob.applications.some(app => app.applicant === user?._id)
+    : false;
+
   const [isApplied, setIsApplied] = useState(isIntiallyApplied);
 
   const applyJobHandler = async () => {
@@ -24,7 +28,12 @@ const JobDescription = () => {
       const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/application/apply/${params.id}`);
       if (res.data.success) {
         setIsApplied(true);
-        const updatedJob = { ...singleJob, applications: [...singleJob.applications, { applicant: user?._id }] };
+        const updatedJob = {
+          ...singleJob,
+          applications: singleJob && Array.isArray(singleJob.applications)
+            ? [...singleJob.applications, { applicant: user?._id }]
+            : [{ applicant: user?._id }]
+        };
         dispatch(setSingleJob(updatedJob));
         toast.success(res.data.message);
       }
@@ -37,11 +46,16 @@ const JobDescription = () => {
   useEffect(() => {
     const fetchSingleJob = async () => {
       try {
-         axios.defaults.withCredentials = true;
+        axios.defaults.withCredentials = true;
         const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/job/${params.id}`);
         if (res.data.success) {
-          dispatch(setSingleJob(res.data.job));
-          setIsApplied(res.data.job.applications.some(app => app.applicant === user?._id));
+          // ✅ Ensure applications array exists
+          const jobData = {
+            ...res.data.job,
+            applications: Array.isArray(res.data.job.applications) ? res.data.job.applications : []
+          };
+          dispatch(setSingleJob(jobData));
+          setIsApplied(jobData.applications.some(app => app.applicant === user?._id));
         }
       } catch (error) {
         console.log(error);
@@ -59,9 +73,9 @@ const JobDescription = () => {
           <div>
             <h1 className="font-bold text-2xl">{singleJob?.title}</h1>
             <div className="flex flex-wrap items-center gap-3 mt-3">
-              <Badge className="text-blue-700 font-bold" variant="ghost">{singleJob?.position} Positions</Badge>
-              <Badge className="text-[#F83002] font-bold" variant="ghost">{singleJob?.jobType}</Badge>
-              <Badge className="text-[#7209b7] font-bold" variant="ghost">{singleJob?.salary} LPA</Badge>
+              <Badge className="text-blue-700 font-bold" variant="ghost">{singleJob?.position || '-' } Positions</Badge>
+              <Badge className="text-[#F83002] font-bold" variant="ghost">{singleJob?.jobType || '-'}</Badge>
+              <Badge className="text-[#7209b7] font-bold" variant="ghost">{singleJob?.salary || '-'} LPA</Badge>
             </div>
           </div>
           <Button
@@ -80,15 +94,15 @@ const JobDescription = () => {
           <h2 className="font-semibold text-lg border-b pb-2">Job Description</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             <div className="space-y-2">
-              <p className="font-bold">Role: <span className="font-normal text-gray-800">{singleJob?.title}</span></p>
-              <p className="font-bold">Location: <span className="font-normal text-gray-800">{singleJob?.location}</span></p>
-              <p className="font-bold">Experience: <span className="font-normal text-gray-800">{singleJob?.experience} yrs</span></p>
-              <p className="font-bold">Salary: <span className="font-normal text-gray-800">{singleJob?.salary} LPA</span></p>
+              <p className="font-bold">Role: <span className="font-normal text-gray-800">{singleJob?.title || '-'}</span></p>
+              <p className="font-bold">Location: <span className="font-normal text-gray-800">{singleJob?.location || '-'}</span></p>
+              <p className="font-bold">Experience: <span className="font-normal text-gray-800">{singleJob?.experience || '-'} yrs</span></p>
+              <p className="font-bold">Salary: <span className="font-normal text-gray-800">{singleJob?.salary || '-'} LPA</span></p>
             </div>
             <div className="space-y-2">
-              <p className="font-bold">Total Applicants: <span className="font-normal text-gray-800">{singleJob?.applications?.length}</span></p>
-              <p className="font-bold">Posted Date: <span className="font-normal text-gray-800">{singleJob?.createdAt?.split("T")[0]}</span></p>
-              <p className="font-bold">Description: <span className="font-normal text-gray-800">{singleJob?.description}</span></p>
+              <p className="font-bold">Total Applicants: <span className="font-normal text-gray-800">{singleJob?.applications?.length || 0}</span></p>
+              <p className="font-bold">Posted Date: <span className="font-normal text-gray-800">{singleJob?.createdAt?.split("T")[0] || '-'}</span></p>
+              <p className="font-bold">Description: <span className="font-normal text-gray-800">{singleJob?.description || '-'}</span></p>
             </div>
           </div>
         </div>
