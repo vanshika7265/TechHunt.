@@ -10,8 +10,9 @@ const Jobs = () => {
     const { allJobs = [] } = useSelector(store => store.job);
 
     const [searchText, setSearchText] = useState("");
-    const [filteredJobs, setFilteredJobs] = useState(allJobs);
+    const [filteredJobs, setFilteredJobs] = useState([]);
 
+    // ✅ Fetch jobs
     useGetAllJobs();
 
     // Reset search query on unmount
@@ -19,18 +20,19 @@ const Jobs = () => {
         return () => dispatch(setSearchedQuery(""));
     }, [dispatch]);
 
-    // Filter jobs based on search
+    // Update filtered jobs whenever allJobs or searchText changes
     useEffect(() => {
+        const jobsToFilter = allJobs || [];
         if(searchText) {
-            const filtered = allJobs.filter(job =>
-                job.title.toLowerCase().includes(searchText.toLowerCase()) ||
-                job.description.toLowerCase().includes(searchText.toLowerCase()) ||
-                job.company?.name.toLowerCase().includes(searchText.toLowerCase()) ||
-                job.location.toLowerCase().includes(searchText.toLowerCase())
+            const filtered = jobsToFilter.filter(job =>
+                (job.title || "").toLowerCase().includes(searchText.toLowerCase()) ||
+                (job.description || "").toLowerCase().includes(searchText.toLowerCase()) ||
+                (job.company?.name || "").toLowerCase().includes(searchText.toLowerCase()) ||
+                (job.location || "").toLowerCase().includes(searchText.toLowerCase())
             );
             setFilteredJobs(filtered);
         } else {
-            setFilteredJobs(allJobs);
+            setFilteredJobs(jobsToFilter);
         }
     }, [searchText, allJobs]);
 
@@ -57,7 +59,9 @@ const Jobs = () => {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredJobs.map(job => <Job key={job._id} job={job} />)}
+                            {filteredJobs.map(job => (
+                                <Job key={job._id} job={job} />
+                            ))}
                         </div>
                     )}
                 </div>
