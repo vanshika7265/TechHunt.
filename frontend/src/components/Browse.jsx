@@ -6,41 +6,17 @@ import { setSearchedQuery } from "@/redux/jobSlice";
 import useGetAllJobs from "@/hooks/useGetAllJobs";
 import { motion } from "framer-motion";
 
-// ✅ Demo company data fallback
+// Demo fallback
 const demoCompanies = [
-  {
-    _id: "1",
-    name: "Google",
-    location: "Hyderabad",
-    description: "Innovative software solutions for modern businesses",
-    status: "Active",
-  },
-  {
-    _id: "2",
-    name: "Amazon",
-    location: "Bangalore",
-    description: "Sustainable tech for a better future",
-    status: "Pending",
-  },
-  {
-    _id: "3",
-    name: "Forma.AI",
-    location: "Pune",
-    description: "Financial analytics and AI solutions",
-    status: "Closed",
-  },
-  {
-    _id: "4",
-    name: "HealthPlus",
-    location: "Berlin, Germany",
-    description: "Healthcare management software",
-    status: "Active",
-  },
+  { _id: "1", name: "Google", location: "Hyderabad", description: "Innovative software solutions", status: "Active" },
+  { _id: "2", name: "Amazon", location: "Bangalore", description: "Sustainable tech for a better future", status: "Pending" },
+  { _id: "3", name: "Forma.AI", location: "Pune", description: "Financial analytics and AI solutions", status: "Closed" },
+  { _id: "4", name: "HealthPlus", location: "Berlin", description: "Healthcare management software", status: "Active" },
 ];
 
 const Browse = () => {
   useGetAllJobs();
-  const { allJobs = [] } = useSelector((store) => store.job || {});
+  const { allJobs = [] } = useSelector(store => store.job || {});
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -49,8 +25,7 @@ const Browse = () => {
     };
   }, [dispatch]);
 
-  // Determine what to render: jobs or demo companies
-  const hasJobs = allJobs.length > 0;
+  const hasJobs = Array.isArray(allJobs) && allJobs.length > 0;
   const itemsToRender = hasJobs ? allJobs : demoCompanies;
 
   return (
@@ -59,9 +34,7 @@ const Browse = () => {
 
       <div className="max-w-7xl mx-auto my-10 px-4 md:px-6">
         <h1 className="font-bold text-2xl mb-6">
-          {hasJobs
-            ? `Search Results (${allJobs.length})`
-            : "Demo Companies"}
+          {hasJobs ? `Search Results (${allJobs.length})` : "Demo Companies"}
         </h1>
 
         {itemsToRender.length === 0 ? (
