@@ -1,32 +1,27 @@
-import { setAllJobs } from '@/redux/jobSlice'
-import axios from 'axios'
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from "react";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setAllJobs } from "@/redux/jobSlice";
 
 const useGetAllJobs = () => {
-  const dispatch = useDispatch();
-  const { searchedQuery } = useSelector((store) => store.job);
+    const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchAllJobs = async () => {
-      try {
-        const res = await axios.get(
-          `https://techhunt-2.onrender.com/api/v1/job/get?keyword=${searchedQuery || ""}`,
-          { withCredentials: true } // ✅ important for auth cookie
-        );
+    useEffect(() => {
+        const fetchJobs = async () => {
+            try {
+                const res = await axios.get("https://techhunt-2.onrender.com/api/job/get", {
+                    withCredentials: true
+                });
+                // Only Active jobs
+                const activeJobs = res.data.jobs.filter(job => job.status === "Active");
+                dispatch(setAllJobs(activeJobs));
+            } catch (err) {
+                console.error("Error fetching jobs:", err);
+            }
+        };
 
-        if (res.data.success) {
-          dispatch(setAllJobs(res.data.jobs));
-        } else {
-          console.log("Failed to fetch jobs:", res.data.message);
-        }
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      }
-    };
-
-    fetchAllJobs();
-  }, [searchedQuery]); // ✅ re-fetch when search changes
+        fetchJobs();
+    }, [dispatch]);
 };
 
 export default useGetAllJobs;

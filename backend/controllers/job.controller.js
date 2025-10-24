@@ -39,6 +39,7 @@ export const getAllJobs = async (req, res) => {
     try {
         const keyword = req.query.keyword || "";
         const query = {
+            status: "Active", // Only Active jobs
             $or: [
                 { title: { $regex: keyword, $options: "i" } },
                 { description: { $regex: keyword, $options: "i" } },
@@ -48,18 +49,13 @@ export const getAllJobs = async (req, res) => {
             .populate("company")
             .sort({ createdAt: -1 });
 
-        return res.status(200).json({
-            jobs,
-            success: true
-        });
+        return res.status(200).json({ jobs, success: true });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({
-            message: "Internal Server Error",
-            success: false
-        });
+        return res.status(500).json({ message: "Internal Server Error", success: false });
     }
 };
+
 
 // STUDENT: Get job by ID
 export const getJobById = async (req, res) => {
