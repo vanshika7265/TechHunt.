@@ -8,12 +8,18 @@ import { motion } from 'framer-motion';
 const Job = ({ job }) => {
   const navigate = useNavigate();
 
+  // 🔹 Debug log: check the job object received
+  console.log("Job object received in Job component:", job);
+
   const daysAgoFunction = (mongodbTime) => {
     const createdAt = new Date(mongodbTime);
     const currentTime = new Date();
     const diff = currentTime - createdAt;
     return Math.floor(diff / (1000 * 60 * 60 * 24));
   };
+
+  // Safe handling for company
+  const companyName = job?.company?.name || "Unknown Company";
 
   return (
     <motion.div
@@ -33,7 +39,7 @@ const Job = ({ job }) => {
       {/* Company Info */}
       <div className="flex items-center gap-2 mb-3">
         <div>
-          <h1 className="font-medium text-lg">{job?.company?.name}</h1>
+          <h1 className="font-medium text-lg">{companyName}</h1>
           <p className="text-sm text-gray-500">{job?.location || 'India'}</p>
         </div>
       </div>
