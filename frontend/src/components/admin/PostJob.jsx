@@ -71,7 +71,7 @@ const PostJob = () => {
       setLoading(true);
 
       // ✅ Prepare payload
-      const payload = {
+     const payload = {
   title: input.title.trim(),
   description: input.description.trim(),
   requirements: input.requirements
@@ -81,9 +81,11 @@ const PostJob = () => {
   location: input.location.trim() || "",
   jobType: input.jobType.trim() || "",
   experience: input.experience ? Number(input.experience) : 0,
-  position: input.position.trim() || "", // ✅ string
+  position: input.position.trim() || "",
   companyId: input.companyId,
+  status: "Active", // ✅ add this line
 };
+
 
 
       const res = await axios.post(
