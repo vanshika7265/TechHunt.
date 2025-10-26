@@ -29,7 +29,7 @@ const Jobs = () => {
 
 
     useEffect(() => {
-        if (authUser?.role === 'recruiter') {
+        if (authUser?.role === 'admin') {
             navigate("/admin/jobs");
         }
     })

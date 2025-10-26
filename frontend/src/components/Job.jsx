@@ -3,8 +3,6 @@ import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { Bookmark } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { ApplyJobDialog } from './ApplyJobDialog'
-import { Avatar, AvatarImage } from './ui/avatar'
 
 const Job = ({ job }) => {
     const [open, setOpen] = useState(false);
@@ -24,11 +22,7 @@ const Job = ({ job }) => {
                 <Button size="icon" className="rounded-full" variant="secondary"><Bookmark /></Button>
             </div>
             <div className='flex items-center gap-2 my-2'>
-                <Button size='icon' variant="outline" className="p-6">
-                    <Avatar>
-                        <AvatarImage src={job?.company?.logo} />
-                    </Avatar>
-                </Button>
+                
                 <div>
                     <h1 className='font-medium text-lg'>{job?.company?.name}</h1>
                     <p className='text-sm text-gray-500'>India</p>
@@ -47,9 +41,7 @@ const Job = ({ job }) => {
                 <Button onClick={() => navigate(`/description/${job?._id}`)} variant="outline" className="rounded-lg">Details</Button>
                 <Button className="bg-[#7209b7] rounded-lg">Save For Later</Button>
             </div>
-            <div>
-                <ApplyJobDialog open={open} setOpen={setOpen} />
-            </div>
+            
         </div>
     )
 }
