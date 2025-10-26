@@ -12,17 +12,19 @@ export const postJob = async (req, res) => {
     }
 
     const job = await Job.create({
-      title,
-      description,
-      requirements: requirements?.map(r => r.trim()) || [],
-      salary: Number(salary) || 0,
-      location: location || "",
-      jobType: jobType || "",
-      experienceLevel: Number(experience) || 0,
-      position: position || "", // ✅ string
-      company: companyId,
-      created_by: userId
-    });
+  title,
+  description,
+  requirements: requirements?.map(r => r.trim()) || [],
+  salary: Number(salary) || 0,
+  location: location || "",
+  jobType: jobType || "",
+  experienceLevel: Number(experience) || 0,
+  position: position || "",
+  company: companyId,
+  created_by: userId,
+  status: "Active" // ✅ yahi line add karo
+});
+
 
     return res.status(201).json({ message: "Job created successfully", job, success: true });
 
