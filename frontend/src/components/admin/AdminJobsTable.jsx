@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { useGetAllAdminJobs } from '@/hooks/useGetAllAdminJobs';
+import useGetAllAdminJobs from '@/hooks/useGetAllAdminJobs'; // ✅ fixed import
 import { setAllAdminJobs } from '@/redux/jobSlice';
 
 const AdminJobsTable = () => {
@@ -49,7 +49,6 @@ const AdminJobsTable = () => {
       );
       if (res.data.success) {
         toast.success(res.data.message);
-        // Update local state
         const updatedJobs = allAdminJobs.map(job =>
           job._id === jobId ? { ...job, status: newStatus } : job
         );
