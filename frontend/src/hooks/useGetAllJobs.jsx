@@ -1,35 +1,26 @@
-import { useEffect } from "react";
-import axios from "axios";
-import { useDispatch } from "react-redux";
 import { setAllJobs } from "@/redux/jobSlice";
+import axios from "axios"
+import { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
 
 const useGetAllJobs = () => {
     const dispatch = useDispatch();
+    const { searchText } = useSelector(store => store.job);
 
     useEffect(() => {
         const fetchJobs = async () => {
             try {
-                const res = await axios.get("https://techhunt-2.onrender.com/api/job/get", {
-                    withCredentials: true
-                });
-
-                // ✅ Safe check
-                const jobsData = res?.data?.jobs || [];
-
-                // ✅ Only Active jobs (status field may be missing)
-                const activeJobs = jobsData.filter(job => 
-                    (job.status || "").toLowerCase() === "active"
-                );
-
-                dispatch(setAllJobs(activeJobs));
-            } catch (err) {
-                console.error("Error fetching jobs:", err);
-                dispatch(setAllJobs([])); // fallback
+                axios.defaults.withCredentials = true;
+                const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/job/all?keyword=${searchText}`);
+               
+                if (res.data.success) {
+                    dispatch(setAllJobs(res.data.jobs));
+                }
+            } catch (error) {
+                console.log(error);
             }
-        };
-
+        }
         fetchJobs();
-    }, [dispatch]);
-};
-
+    }, [])
+}
 export default useGetAllJobs;
