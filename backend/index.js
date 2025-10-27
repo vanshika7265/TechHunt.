@@ -34,19 +34,17 @@ app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 
-// 🧩 Serve frontend (for all non-API routes only)
+// Serve frontend
 app.use(express.static(path.join(_dirname, "frontend/dist")));
 
-app.get("*", (req, res) => {
-  // ✅ if route starts with /api, don’t serve frontend
-  if (req.originalUrl.startsWith("/api")) {
-    return res.status(404).json({ message: "API route not found" });
-  }
+// For all unmatched routes
+app.get("*", (_, res) => {
   res.sendFile(path.join(_dirname, "frontend/dist/index.html"));
 });
 
-// 🧩 Start server
+// Start server
 app.listen(PORT, () => {
   connectDB();
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`Server running at port ${PORT}`);
 });
+
