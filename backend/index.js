@@ -36,14 +36,13 @@ app.use("/api/v1/application", applicationRoute);
 // Serve frontend
 app.use(express.static(path.join(_dirname, "frontend/dist")));
 
-// For all unmatched routes, send index.html (use RegExp)
-app.get("*", (_, res) => {
+// ✅ FIX: Express v5 wildcard route
+app.get(/.*/, (_, res) => {
   res.sendFile(path.join(_dirname, "frontend/dist/index.html"));
 });
-
 
 // Start server
 app.listen(PORT, () => {
   connectDB();
-  console.log(`Server running at port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
