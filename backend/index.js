@@ -14,35 +14,39 @@ dotenv.config();
 const app = express();
 const _dirname = path.resolve();
 
-// Middleware
+// 🧩 Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// 🧩 CORS setup
 const corsOptions = {
-  origin: 'https://techhunt-2.onrender.com',
-  credentials: true
+  origin: "https://techhunt-2.onrender.com",
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 3000;
 
-// API routes
+// 🧩 API routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 
-// Serve frontend
+// 🧩 Serve frontend (for all non-API routes only)
 app.use(express.static(path.join(_dirname, "frontend/dist")));
 
-// For all unmatched routes, send index.html (use RegExp)
-app.get(/.*/, (_, res) => {
+app.get("*", (req, res) => {
+  // ✅ if route starts with /api, don’t serve frontend
+  if (req.originalUrl.startsWith("/api")) {
+    return res.status(404).json({ message: "API route not found" });
+  }
   res.sendFile(path.join(_dirname, "frontend/dist/index.html"));
 });
 
-// Start server
+// 🧩 Start server
 app.listen(PORT, () => {
   connectDB();
-  console.log(`Server running at port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
