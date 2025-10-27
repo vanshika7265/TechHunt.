@@ -39,7 +39,7 @@ const ApplicantsTable = () => {
       _id: "1",
       applicant: {
         fullname: "Aarav Sharma",
-        email: "aarav.sharma@gmail.com",
+        email: "aarav.sharma1@gmail.com",
         phoneNumber: "9876543210",
         createdAt: "2025-10-20T10:30:00Z",
       },
