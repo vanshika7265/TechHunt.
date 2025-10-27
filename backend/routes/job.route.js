@@ -9,4 +9,8 @@ router.get("/get", isAuthenticated, getAllJobs);
 router.get("/getadminjobs", isAuthenticated, getAdminJobs);
 router.get("/get/:id", isAuthenticated, getJobById);
 
+// 👇 Add this new line (public route for students)
+router.get("/all", getAllJobs);
+
+
 export default router;
