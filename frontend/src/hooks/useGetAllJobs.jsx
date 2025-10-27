@@ -11,8 +11,8 @@ const useGetAllJobs = () => {
         const fetchJobs = async () => {
             try {
                 axios.defaults.withCredentials = true;
-                const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/job/all?keyword=${searchText}`);
-               
+const res = await axios.get(`https://techhunt-2.onrender.com/jobs`);
+                              
                 if (res.data.success) {
                     dispatch(setAllJobs(res.data.jobs));
                 }
