@@ -14,21 +14,20 @@ dotenv.config();
 const app = express();
 const _dirname = path.resolve();
 
-// 🧩 Middleware
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// 🧩 CORS setup
 const corsOptions = {
-  origin: "https://techhunt-2.onrender.com",
-  credentials: true,
+  origin: 'https://techhunt-2.onrender.com',
+  credentials: true
 };
 app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 3000;
 
-// 🧩 API routes
+// API routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
@@ -37,8 +36,8 @@ app.use("/api/v1/application", applicationRoute);
 // Serve frontend
 app.use(express.static(path.join(_dirname, "frontend/dist")));
 
-// For all unmatched routes
-app.get("*", (_, res) => {
+// For all unmatched routes, send index.html (use RegExp)
+app.get(/.*/, (_, res) => {
   res.sendFile(path.join(_dirname, "frontend/dist/index.html"));
 });
 
@@ -47,4 +46,3 @@ app.listen(PORT, () => {
   connectDB();
   console.log(`Server running at port ${PORT}`);
 });
-
