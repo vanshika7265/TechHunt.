@@ -19,14 +19,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ✅ CORS for your frontend domain
 const corsOptions = {
-  origin: "https://techhunt-2.onrender.com",
-  credentials: true,
+  origin: 'https://techhunt-2.onrender.com',
+  credentials: true
 };
 app.use(cors(corsOptions));
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 
 // API routes
 app.use("/api/v1/user", userRoute);
@@ -34,16 +33,16 @@ app.use("/api/v1/company", companyRoute);
 app.use("/api/v1/job", jobRoute);
 app.use("/api/v1/application", applicationRoute);
 
-// ✅ Serve frontend build
+// Serve frontend
 app.use(express.static(path.join(_dirname, "frontend/dist")));
 
-// ✅ Fix wildcard route for React Router
-app.get("/*", (_, res) => {
-  res.sendFile(path.join(_dirname, "frontend/dist", "index.html"));
+// For all unmatched routes, send index.html (use RegExp)
+app.get(/.*/, (_, res) => {
+  res.sendFile(path.join(_dirname, "frontend/dist/index.html"));
 });
 
-// ✅ Start server
+// Start server
 app.listen(PORT, () => {
   connectDB();
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running at port ${PORT}`);
 });

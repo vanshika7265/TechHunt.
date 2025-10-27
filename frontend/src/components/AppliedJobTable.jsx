@@ -10,9 +10,45 @@ import {
 import { useSelector } from "react-redux";
 
 const AppliedJobTable = () => {
-  const { allAppliedJobs = [] } = useSelector((store) => store.job);
+  // Dummy applied jobs (fallback for now)
+  const dummyAppliedJobs = [
+    {
+      _id: "1",
+      createdAt: "2025-10-20T09:15:00Z",
+      job: {
+        title: "Frontend Developer",
+        company: { name: "Google" },
+      },
+      status: "accepted",
+    },
+    {
+      _id: "2",
+      createdAt: "2025-10-22T14:45:00Z",
+      job: {
+        title: "Data Analyst",
+        company: { name: "ZS Associates" },
+      },
+      status: "pending",
+    },
+    {
+      _id: "3",
+      createdAt: "2025-10-25T11:30:00Z",
+      job: {
+        title: "Backend Engineer",
+        company: { name: "Amazon" },
+      },
+      status: "rejected",
+    },
+  ];
 
-  // Function to get badge variant based on status
+  // Pull from Redux if available, else use dummy
+  const { allAppliedJobs = [] } = useSelector((store) => store.job);
+  const jobsToDisplay =
+    allAppliedJobs && allAppliedJobs.length > 0
+      ? allAppliedJobs
+      : dummyAppliedJobs;
+
+  // Badge color based on status
   const getBadgeVariant = (status) => {
     switch (status) {
       case "accepted":
@@ -38,7 +74,7 @@ const AppliedJobTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {allAppliedJobs.length === 0 ? (
+          {jobsToDisplay.length === 0 ? (
             <TableRow>
               <TableCell
                 colSpan={4}
@@ -48,7 +84,7 @@ const AppliedJobTable = () => {
               </TableCell>
             </TableRow>
           ) : (
-            allAppliedJobs.map((appliedJob) => (
+            jobsToDisplay.map((appliedJob) => (
               <TableRow
                 key={appliedJob._id}
                 className="hover:bg-gray-50 transition-colors cursor-pointer rounded-lg"
