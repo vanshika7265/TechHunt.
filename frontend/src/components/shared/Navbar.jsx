@@ -16,23 +16,41 @@ const Navbar = () => {
 
   const logoutHandler = async () => {
     try {
-     const res = await axios.get("https://techhunt-2.onrender.com/api/v1/user/logout", { withCredentials: true });
+      const res = await axios.get(
+        "https://techhunt-2.onrender.com/api/v1/user/logout",
+        { withCredentials: true }
+      );
+
+      // ✅ Always remove token & clear Redux, even if API fails
+      localStorage.removeItem("token");
+      dispatch(setUser(null));
 
       if (res.data.success) {
-        dispatch(setUser(null));
-        navigate("/");
         toast.success(res.data.message);
+      } else {
+        toast.info("Logged out.");
       }
+
+      // ✅ Small delay for smoother UX
+      setTimeout(() => {
+        window.location.reload(); // refresh to reset all states
+        navigate("/login");
+      }, 500);
     } catch (error) {
       console.log(error);
+      localStorage.removeItem("token");
+      dispatch(setUser(null));
       toast.error(error.response?.data?.message || "Error logging out");
+      window.location.reload();
     }
   };
 
   return (
     <nav className="bg-white shadow">
       <div className="flex items-center justify-between mx-auto max-w-7xl h-16 px-6">
-        <h1 className="text-2xl font-bold">College<span className="text-[#6A38C2]">Portal</span></h1>
+        <h1 className="text-2xl font-bold">
+          College<span className="text-[#6A38C2]">Portal</span>
+        </h1>
 
         {/* Nav Links */}
         <ul className="flex font-medium items-center gap-6">
@@ -78,7 +96,10 @@ const Navbar = () => {
                     <User2 /> View Profile
                   </Link>
                 )}
-                <button onClick={logoutHandler} className="flex items-center gap-2 text-gray-700 hover:text-red-500">
+                <button
+                  onClick={logoutHandler}
+                  className="flex items-center gap-2 text-gray-700 hover:text-red-500"
+                >
                   <LogOut /> Logout
                 </button>
               </div>
