@@ -15,47 +15,64 @@ const JobDescription = () => {
   const jobId = params.id;
   const dispatch = useDispatch();
 
-  // ✅ Safe check for applications array
-  const isIntiallyApplied = singleJob && Array.isArray(singleJob.applications)
-    ? singleJob.applications.some(app => app.applicant === user?._id)
-    : false;
+  // ✅ Check if user already applied
+  const isInitiallyApplied =
+    singleJob && Array.isArray(singleJob.applications)
+      ? singleJob.applications.some(
+          app => app === user?._id || app?.applicant === user?._id
+        )
+      : false;
 
-  const [isApplied, setIsApplied] = useState(isIntiallyApplied);
+  const [isApplied, setIsApplied] = useState(isInitiallyApplied);
 
+  // ✅ Apply job handler
   const applyJobHandler = async () => {
     try {
       axios.defaults.withCredentials = true;
-      const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/application/apply/${params.id}`);
+      const res = await axios.get(
+        `https://techhunt-2.onrender.com/api/v1/application/apply/${params.id}`
+      );
+
       if (res.data.success) {
         setIsApplied(true);
         const updatedJob = {
           ...singleJob,
-          applications: singleJob && Array.isArray(singleJob.applications)
-            ? [...singleJob.applications, { applicant: user?._id }]
-            : [{ applicant: user?._id }]
+          applications:
+            singleJob && Array.isArray(singleJob.applications)
+              ? [...singleJob.applications, user?._id]
+              : [user?._id],
         };
         dispatch(setSingleJob(updatedJob));
         toast.success(res.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error.response?.data?.message || 'Something went wrong');
     }
   };
 
+  // ✅ Fetch single job details
   useEffect(() => {
     const fetchSingleJob = async () => {
       try {
         axios.defaults.withCredentials = true;
-        const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/job/${params.id}`);
+        const res = await axios.get(
+          `https://techhunt-2.onrender.com/api/v1/job/get/${params.id}`
+        );
+
         if (res.data.success) {
-          // ✅ Ensure applications array exists
           const jobData = {
             ...res.data.job,
-            applications: Array.isArray(res.data.job.applications) ? res.data.job.applications : []
+            applications: Array.isArray(res.data.job.applications)
+              ? res.data.job.applications
+              : [],
           };
           dispatch(setSingleJob(jobData));
-          setIsApplied(jobData.applications.some(app => app.applicant === user?._id));
+          setIsApplied(
+            jobData.applications.some(
+              app => app === user?._id || app?.applicant === user?._id
+            )
+          );
         }
       } catch (error) {
         console.log(error);
@@ -71,18 +88,27 @@ const JobDescription = () => {
         {/* Header + Apply Button */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="font-bold text-2xl">{singleJob?.title}</h1>
+            <h1 className="font-bold text-2xl">{singleJob?.title || '-'}</h1>
             <div className="flex flex-wrap items-center gap-3 mt-3">
-              <Badge className="text-blue-700 font-bold" variant="ghost">{singleJob?.position || '-' } Positions</Badge>
-              <Badge className="text-[#F83002] font-bold" variant="ghost">{singleJob?.jobType || '-'}</Badge>
-              <Badge className="text-[#7209b7] font-bold" variant="ghost">{singleJob?.salary || '-'} LPA</Badge>
+              <Badge className="text-blue-700 font-bold" variant="ghost">
+                {singleJob?.position || '-'} Positions
+              </Badge>
+              <Badge className="text-[#F83002] font-bold" variant="ghost">
+                {singleJob?.jobType || '-'}
+              </Badge>
+              <Badge className="text-[#7209b7] font-bold" variant="ghost">
+                {singleJob?.salary || '-'} LPA
+              </Badge>
             </div>
           </div>
+
           <Button
             onClick={isApplied ? null : applyJobHandler}
             disabled={isApplied}
             className={`rounded-lg px-6 py-2 font-medium ${
-              isApplied ? 'bg-gray-600 cursor-not-allowed' : 'bg-[#7209b7] hover:bg-[#5f32ad] text-white'
+              isApplied
+                ? 'bg-gray-600 cursor-not-allowed'
+                : 'bg-[#7209b7] hover:bg-[#5f32ad] text-white'
             }`}
           >
             {isApplied ? 'Already Applied' : 'Apply Now'}
@@ -91,18 +117,56 @@ const JobDescription = () => {
 
         {/* Job Details */}
         <div className="mt-6 space-y-3">
-          <h2 className="font-semibold text-lg border-b pb-2">Job Description</h2>
+          <h2 className="font-semibold text-lg border-b pb-2">
+            Job Description
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             <div className="space-y-2">
-              <p className="font-bold">Role: <span className="font-normal text-gray-800">{singleJob?.title || '-'}</span></p>
-              <p className="font-bold">Location: <span className="font-normal text-gray-800">{singleJob?.location || '-'}</span></p>
-              <p className="font-bold">Experience: <span className="font-normal text-gray-800">{singleJob?.experience || '-'} yrs</span></p>
-              <p className="font-bold">Salary: <span className="font-normal text-gray-800">{singleJob?.salary || '-'} LPA</span></p>
+              <p className="font-bold">
+                Role:{' '}
+                <span className="font-normal text-gray-800">
+                  {singleJob?.title || '-'}
+                </span>
+              </p>
+              <p className="font-bold">
+                Location:{' '}
+                <span className="font-normal text-gray-800">
+                  {singleJob?.location || '-'}
+                </span>
+              </p>
+              <p className="font-bold">
+                Experience:{' '}
+                <span className="font-normal text-gray-800">
+                  {singleJob?.experienceLevel || '-'} yrs
+                </span>
+              </p>
+              <p className="font-bold">
+                Salary:{' '}
+                <span className="font-normal text-gray-800">
+                  {singleJob?.salary || '-'} LPA
+                </span>
+              </p>
             </div>
+
             <div className="space-y-2">
-              <p className="font-bold">Total Applicants: <span className="font-normal text-gray-800">{singleJob?.applications?.length || 0}</span></p>
-              <p className="font-bold">Posted Date: <span className="font-normal text-gray-800">{singleJob?.createdAt?.split("T")[0] || '-'}</span></p>
-              <p className="font-bold">Description: <span className="font-normal text-gray-800">{singleJob?.description || '-'}</span></p>
+              <p className="font-bold">
+                Total Applicants:{' '}
+                <span className="font-normal text-gray-800">
+                  {singleJob?.applications?.length || 0}
+                </span>
+              </p>
+              <p className="font-bold">
+                Posted Date:{' '}
+                <span className="font-normal text-gray-800">
+                  {singleJob?.createdAt?.split('T')[0] || '-'}
+                </span>
+              </p>
+              <p className="font-bold">
+                Description:{' '}
+                <span className="font-normal text-gray-800">
+                  {singleJob?.description || '-'}
+                </span>
+              </p>
             </div>
           </div>
         </div>
@@ -111,4 +175,4 @@ const JobDescription = () => {
   );
 };
 
-export default JobDescription; 
+export default JobDescription;
