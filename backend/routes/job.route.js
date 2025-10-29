@@ -18,7 +18,6 @@ router.get("/getadminjobs", isAuthenticated, getAdminJobs);
 router.get("/get", getAllJobs);           // ✅ Anyone can view jobs
 router.get("/get/:id", getJobById);       // ✅ Anyone can view job details
 
-// 🎯 Student-only
-router.post("/apply/:id", isAuthenticated, applyToJob);  // ✅ Only logged-in users can apply
+
 
 export default router;
