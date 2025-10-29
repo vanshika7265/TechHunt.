@@ -1,23 +1,13 @@
 import express from "express";
 import isAuthenticated from "../middlewares/isAuthenticated.js";
-import {
-  postJob,
-  getAllJobs,
-  getJobById,
-  getAdminJobs,
-  applyToJob, // ✅ make sure this exists in controller
-} from "../controllers/job.controller.js";
+import { postJob, getAllJobs, getJobById, getAdminJobs } from "../controllers/job.controller.js";
 
 const router = express.Router();
 
-// 🧩 Admin-only
 router.post("/post", isAuthenticated, postJob);
+router.get("/get",  getAllJobs);
 router.get("/getadminjobs", isAuthenticated, getAdminJobs);
-
-// 🌍 Public routes
-router.get("/get", getAllJobs);           // ✅ Anyone can view jobs
-router.get("/get/:id", getJobById);       // ✅ Anyone can view job details
-
+router.get("/get/:id",  getJobById);
 
 
 export default router;
