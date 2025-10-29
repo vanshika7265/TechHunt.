@@ -8,10 +8,11 @@ const jobSchema = new mongoose.Schema({
   experienceLevel: { type: Number, required: true },
   location: { type: String, required: true },
   jobType: { type: String, required: true },
-  position: { type: String, required: true }, // ✅ changed from Number to String
+  position: { type: String, required: true },
   company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
   created_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   applications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Application' }],
+  status: { type: String, enum: ["Active", "Closed"], default: "Active" } // ✅ added
 }, { timestamps: true });
 
 export const Job = mongoose.model("Job", jobSchema);
