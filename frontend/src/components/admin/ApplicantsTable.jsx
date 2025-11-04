@@ -50,7 +50,7 @@ const ApplicantsTable = () => {
                                 <TableCell>{item?.applicant?.fullname || "-"}</TableCell>
                                 <TableCell>{item?.applicant?.email || "-"}</TableCell>
                                 <TableCell>{item?.applicant?.phoneNumber || "-"}</TableCell>
-                                <TableCell>{item?.applicant?.createdAt?.split("T")[0] || "-"}</TableCell>
+                                <TableCell>{item?.createdAt?.split("T")[0] || "-"}</TableCell>
                                 <TableCell className="text-right">
                                     <Popover>
                                         <PopoverTrigger>

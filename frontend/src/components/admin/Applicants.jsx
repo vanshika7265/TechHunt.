@@ -19,9 +19,11 @@ const Applicants = () => {
         const res = await axios.get(`https://techhunt-2.onrender.com/api/v1/application/${id}/applicants`);
 
         if (res.data.success) {
-          // ✅ Ensure default empty array if job or applications are null
-          dispatch(setAllApplicants(res.data.job || { applications: [] }));
-        }
+  dispatch(setAllApplicants(res.data.job));
+} else {
+  dispatch(setAllApplicants({ applications: [] }));
+}
+
       } catch (error) {
         console.log(error);
         toast.error(error.response?.data?.message || "Something went wrong");
