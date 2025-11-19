@@ -15,7 +15,7 @@ const JobDescription = () => {
   const jobId = params.id;
   const dispatch = useDispatch();
 
-  // ✅ Check if user already applied
+  // Check if user already applied
   const isInitiallyApplied =
     singleJob && Array.isArray(singleJob.applications)
       ? singleJob.applications.some(
@@ -25,8 +25,10 @@ const JobDescription = () => {
 
   const [isApplied, setIsApplied] = useState(isInitiallyApplied);
 
-  // ✅ Apply job handler
+  // Apply job handler
   const applyJobHandler = async () => {
+    if (isApplied) return; // prevent double click
+
     try {
       axios.defaults.withCredentials = true;
       const res = await axios.get(
@@ -35,6 +37,7 @@ const JobDescription = () => {
 
       if (res.data.success) {
         setIsApplied(true);
+
         const updatedJob = {
           ...singleJob,
           applications:
@@ -42,7 +45,9 @@ const JobDescription = () => {
               ? [...singleJob.applications, user?._id]
               : [user?._id],
         };
+
         dispatch(setSingleJob(updatedJob));
+
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -51,7 +56,7 @@ const JobDescription = () => {
     }
   };
 
-  // ✅ Fetch single job details
+  // Fetch single job details
   useEffect(() => {
     const fetchSingleJob = async () => {
       try {
@@ -67,7 +72,9 @@ const JobDescription = () => {
               ? res.data.job.applications
               : [],
           };
+
           dispatch(setSingleJob(jobData));
+
           setIsApplied(
             jobData.applications.some(
               app => app === user?._id || app?.applicant === user?._id
@@ -78,6 +85,7 @@ const JobDescription = () => {
         console.log(error);
       }
     };
+
     fetchSingleJob();
   }, [jobId, dispatch, user?._id]);
 
@@ -102,8 +110,9 @@ const JobDescription = () => {
             </div>
           </div>
 
+          {/* FIXED BUTTON */}
           <Button
-            onClick={isApplied ? null : applyJobHandler}
+            onClick={applyJobHandler}
             disabled={isApplied}
             className={`rounded-lg px-6 py-2 font-medium ${
               isApplied
