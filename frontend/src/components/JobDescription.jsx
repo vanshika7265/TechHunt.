@@ -25,14 +25,21 @@ const JobDescription = () => {
 
   const [isApplied, setIsApplied] = useState(isInitiallyApplied);
 
-  // Apply job handler
+  // Apply job handler - FIXED
   const applyJobHandler = async () => {
-    if (isApplied) return; // prevent double click
+    if (isApplied) return;
 
     try {
       axios.defaults.withCredentials = true;
-      const res = await axios.get(
-        `https://techhunt-2.onrender.com/api/v1/application/apply/${params.id}`
+
+      const res = await axios.post(
+        `https://techhunt-2.onrender.com/api/v1/application/apply/${params.id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
       );
 
       if (res.data.success) {
@@ -47,7 +54,6 @@ const JobDescription = () => {
         };
 
         dispatch(setSingleJob(updatedJob));
-
         toast.success(res.data.message);
       }
     } catch (error) {
